@@ -4,7 +4,7 @@
 * Copyright (c) 2012 Gorka G Llona - http://desarrolladores.logicos.org/gorka.
 * Licensed under the GNU Lesser General Public License.
 * Project home: http://librerias.logicas.org/lib_gg_orgchart.
-* 
+*
 * Revision history:
 * v.0.4.0        (2012.05.14, GG): made publicly available
 * v.0.4.1 beta 1 (2012.07.11, GG): added support for images within boxes
@@ -102,10 +102,10 @@
     // "PRIVATE" FUNCTIONS AND VARIABLES
 
     // clone an object or array
-    // 
+    //
     function oc_clone(obj) {
         var newObj = (obj instanceof Array) ? [] : {};
-        for (i in obj) {
+        for (var i in obj) {
             if (obj[i] && typeof obj[i] == "object")
                 newObj[i] = oc_clone(obj[i]);
             else
@@ -145,7 +145,7 @@
     // initialization of basic variables and objects
     //
     function oc_init(aData, aOptions) {
-        if (aData === undefined || aData == null) {
+        if (aData === undefined || aData === null) {
             console.log('ggOrgChart: data are not defined');
             return;
         }
@@ -162,12 +162,12 @@
         oc_paper = null;
 
         // verify libraries if needed
-        if (typeof options.box_html_template == "string") {
-            if (window.jQuery == undefined)
+        if (typeof options.box_html_template === "string") {
+            if (window.jQuery === undefined)
                 console.log("jQuery is not loaded properly");
             else {
                 var j = jQuery("<div></div>");
-                if (typeof j.render != "function")
+                if (typeof j.render !== "function")
                     console.log("jsrender.js is not loaded properly");
             }
         }
@@ -187,9 +187,9 @@
     //
     function oc_text_limit(node) {
         // IE fix. It is used instead of oc_IE - 18 times...
-        if (node == null)
-            return
-        if (options.max_text_width == 0)
+        if (node === null)
+            return;
+        if (options.max_text_width === 0)
             return;
 
         node.title = oc_text_limit_obj(node.title);
@@ -203,7 +203,7 @@
     // insert newlines in a string in order to meet max_text_width limit
     //
     function oc_text_limit_obj(str) {
-        if (str == undefined)
+        if (str === undefined)
             return undefined;
         var parts = (str + '').split(/[ \n]+/);
         var lines = [];
@@ -211,13 +211,13 @@
         var last_line_str = '';
         for (var i = 0; i < parts.length - (0); i++) {
             last_line_str = line_str;
-            line_str += (i == 0 ? '' : ' ') + parts[i];
+            line_str += (i === 0 ? '' : ' ') + parts[i];
             if (line_str.length > options.max_text_width) {
                 lines.push(last_line_str);
                 line_str = parts[i];
             }
         }
-        if (line_str != '')
+        if (line_str !== '')
             lines.push(line_str);
         var result = lines.join('\n');
         return result;
@@ -226,7 +226,7 @@
     // substitute special chars in node title and subtitle (they don't render well in SVG)
     //
     function oc_delete_special_chars(node) {
-        if (node == null)
+        if (node === null)
             return;
         node.title = oc_delete_special_chars_obj(node.title);
         node.subtitle = oc_delete_special_chars_obj(node.subtitle);
@@ -260,7 +260,7 @@
     // result will be stored in global variables
     //
     function oc_text_dimensions(node) {
-        if (node == null)
+        if (node === null)
             return;
         var dimensions_title = [0, 0];
         var dimensions_subtitle = [0, 0];
@@ -286,7 +286,7 @@
         } else {
             if (dimensions_title[0] > oc_max_text_width)
                 oc_max_text_width = dimensions_title[0];
-            if (options.use_images && options.images_size[0] > oc_max_text_width)	 // GG 110712 include space for optional image width
+            if (options.use_images && options.images_size[0] > oc_max_text_width) // GG 110712 include space for optional image width
                 oc_max_text_width = options.images_size[0];
             if (dimensions_subtitle[0] > oc_max_text_width)
                 oc_max_text_width = dimensions_subtitle[0];
@@ -308,7 +308,7 @@
         }
 
         // make horizantal dimensions an even number in order that divided by 2 doesn't have decimals
-        if (oc_max_text_width % 2 == 1)
+        if (oc_max_text_width % 2 === 1)
             oc_max_text_width++;
     }
 
@@ -318,7 +318,7 @@
     function oc_text_dimensions_obj(text, font_pixels) {
         var width = 0;
         var parts = (text + "").split('\n');
-        if (parts.length == 0)
+        if (parts.length === 0)
             return [0, 0];
         for (var i = 0; i < parts.length - (0); i++) {
             if (parts[i].length > width)
@@ -330,7 +330,7 @@
     // calc all metrics (of a node and subnodes) needed for drawing the chart
     //
     function oc_boundboxes_dimensions(node) {
-        if (node == null)
+        if (node === null)
             return;
 
         var child, i;
@@ -348,26 +348,23 @@
         var oc_collateral_counter  = 0;
         var oc_subordinate_counter = 0;
 
-        // counter of children by type
-        node.childsOfStaff
-
         // invoke recursively,
         // but previously calc the indexes of children according with their role, reflecting the max in the node
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
                 child.parent = node;
-                if (child.type == 'staff') {
+                if (child.type === 'staff') {
                     child.indexAsStaffChildren = node.maxStaffChildIndex = ++oc_staff_counter;
-                    child.position = (oc_staff_position++ % 2 == 0 ? 'left' : 'right');
+                    child.position = (oc_staff_position++ % 2 === 0 ? 'left' : 'right');
                 }
-                else if (child.type == 'collateral') {
+                else if (child.type === 'collateral') {
                     child.indexAsCollateralChildren = node.maxCollateralChildIndex = ++oc_collateral_counter;
-                    child.position = (oc_collateral_position++ % 2 == 0 ? 'left' : 'right');
+                    child.position = (oc_collateral_position++ % 2 === 0 ? 'left' : 'right');
                 }
-                else if (child.type === undefined || child.type == 'subordinate') {
+                else if (child.type === undefined || child.type === 'subordinate') {
                     child.indexAsSubordinateChildren = node.maxSubordinateChildIndex = ++oc_subordinate_counter;
                 }
                 oc_boundboxes_dimensions(child);
@@ -444,7 +441,7 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
                 if (child.type != 'collateral')
                     continue;
@@ -452,7 +449,7 @@
                 collateral_children++;
                 if (child.position == 'left')
                     collateral_left_width = child.fullbbox[0] + node.boundbox[0] / 2;
-                else	 // right
+                else // right
                     collateral_right_width = child.fullbbox[0] + node.boundbox[0] / 2;
             }
         }
@@ -466,12 +463,12 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'staff')
+                if (child.type !== 'staff')
                     continue;
                 staff_children++;
-                if (child.position == 'left') {
+                if (child.position === 'left') {
                     staff_height += child.fullbbox[1];
                     last_left_height = child.fullbbox[1];
                     if (staff_left_width < child.fullbbox[0])
@@ -493,9 +490,9 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'stafftop')
+                if (child.type !== 'stafftop')
                     continue;
                 node.hasOnlyStaffs = false;
                 staff_children++;
@@ -512,9 +509,9 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'staffleft')
+                if (child.type !== 'staffleft')
                     continue;
                 node.hasOnlyStaffs = false;
                 staff_children++;
@@ -526,9 +523,9 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'subordinate')
+                if (child.type !== 'subordinate')
                     continue;
                 node.hasOnlyStaffs = false;
                 subordinate_full_width += child.fullbbox[0];
@@ -551,11 +548,11 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'collateral')
+                if (child.type !== 'collateral')
                     continue;
-                if (child.position == 'left') {
+                if (child.position === 'left') {
                     child.deltacorner = [
                         left_width - node.boundbox[0] / 2 - child.fullbbox[0],
                         0
@@ -576,11 +573,11 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'staff')
+                if (child.type !== 'staff')
                     continue;
-                if (child.position == 'left') {
+                if (child.position === 'left') {
                     child.deltacorner = [
                         left_width - child.fullbbox[0],
                         node.boundbox[1] + staff_height
@@ -588,7 +585,7 @@
                     staff_height += child.fullbbox[1];
                     last_left_height = child.fullbbox[1];
                     // PATCH for case of only one children drawn at botton left of the node
-                    if (staff_children == 1) {
+                    if (staff_children === 1) {
                         node.fullbbox[0] += node.boundbox[0];
                     }
                 } else { // right
@@ -608,9 +605,9 @@
             var stafftop_count = 0;
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'stafftop')
+                if (child.type !== 'stafftop')
                     continue;
                 stafftop_count++;
                 child.deltacorner = [
@@ -625,9 +622,9 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'staffleft')
+                if (child.type !== 'staffleft')
                     continue;
                 child.deltacorner = [
                     left_width - (child.boundbox[0] / 2),
@@ -644,9 +641,9 @@
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'subordinate')
+                if (child.type !== 'subordinate')
                     continue;
                 child.deltacorner = [
                     diff_width + incremental_width,
@@ -656,9 +653,9 @@
             }
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'subordinate')
+                if (child.type !== 'subordinate')
                     continue;
                 oc_update_fullbbox(node, child);
             }
@@ -699,14 +696,14 @@
     // PATCH 1, subcase a. node with only staff children and up to one subordinate
     //
     function subtreeMustBeShiftedRightCaseA(node) {
-        var subordinate_count = 0; 
+        var subordinate_count = 0;
         var child_count       = 0;
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child.type == 'subordinate' && subordinate_count == 0)
+                if (child.type === 'subordinate' && subordinate_count === 0)
                     subordinate_count = 1;
-                else if (child.type == 'subordinate')
+                else if (child.type === 'subordinate')
                     return false;
                 if (child.type !== 'staff')
                     return false;
@@ -719,19 +716,19 @@
     // PATCH 1, subcase b. node with a left staff child that has 2+ subordinate children
     //
     function subtreeMustBeShiftedRightCaseB(node) {
-        var subordinate_count = 0; 
+        var subordinate_count = 0;
         if (node.children !== undefined) {
             for (i = 0; i < node.children.length; i++) {
                 child = node.children[i];
-                if (child == null)
+                if (child === null)
                     continue;
-                if (child.type != 'staff' || child.position == 'right')
+                if (child.type !== 'staff' || child.position === 'right')
                     continue;
                 if (child.children === undefined)
                     continue;
                 for (j = 0; j < child.children.length; j++) {
                     child2 = child.children[j];
-                    if (child2.type == 'subordinate')
+                    if (child2.type === 'subordinate')
                         subordinate_count++;
                         if (subordinate_count >= 2)
                             return true;
@@ -758,7 +755,7 @@
         if (cdc1 + child.fullbbox[1] > y1) y1 = cdc1 + child.fullbbox[1];
         if (x0 < node.deltacorner[0])      node.deltacorner[0] = x0;
 
-        // in nodes with 3+ staff children, ignore them for fullbbox width calculation 
+        // in nodes with 3+ staff children, ignore them for fullbbox width calculation
         ignoreXcoords = child.type == 'staff' && child.indexAsStaffChildren > 2;
         node.fullbbox = [ignoreXcoords ? node.fullbbox[0] : x1 - x0, y1 - y0];
 
@@ -779,7 +776,7 @@
     // draw a subtree
     //
     function oc_draw_obj(node, parent, xoffset, yoffset, xoffset2) {
-        if (node == null)
+        if (node === null)
             return;
 
         // draw children
@@ -807,14 +804,15 @@
         var yc = yoffset + node.deltacorner[1] + node.deltacenter[1];
         var x0 = xc - width / 2 - options.inner_padding;
         var x1 = xc + width / 2 + options.inner_padding;
-        if (parent != null) {
+        var pxc, pyc, px0, px1, py0, py1;
+        if (parent !== null) {
             //var pxc = xc - node.xoffset - node.deltacorner[0] + parent.xoffset + (0 - 0);
-            var pxc = xoffset + parent.deltacenter[0] + parent.xoffset;
-            var pyc = yc - 0 - node.deltacorner[1] + 0 + (parent.deltacenter[1] - node.deltacenter[1]);
-            var px0 = pxc - (parent.boundbox[0] - 2 * options.hline - 2 * options.inner_padding) / 2 - options.inner_padding;
-            var px1 = pxc + (parent.boundbox[0] - 2 * options.hline - 2 * options.inner_padding) / 2 + options.inner_padding;
-            var py0 = pyc - (parent.boundbox[1] - 2 * options.vline - 2 * options.inner_padding) / 2 - options.inner_padding;
-            var py1 = pyc + (parent.boundbox[1] - 2 * options.vline - 2 * options.inner_padding) / 2 + options.inner_padding;
+            pxc = xoffset + parent.deltacenter[0] + parent.xoffset;
+            pyc = yc - 0 - node.deltacorner[1] + 0 + (parent.deltacenter[1] - node.deltacenter[1]);
+            px0 = pxc - (parent.boundbox[0] - 2 * options.hline - 2 * options.inner_padding) / 2 - options.inner_padding;
+            px1 = pxc + (parent.boundbox[0] - 2 * options.hline - 2 * options.inner_padding) / 2 + options.inner_padding;
+            py0 = pyc - (parent.boundbox[1] - 2 * options.vline - 2 * options.inner_padding) / 2 - options.inner_padding;
+            py1 = pyc + (parent.boundbox[1] - 2 * options.vline - 2 * options.inner_padding) / 2 + options.inner_padding;
         }
         var y0, y1;
         if (options.use_images && node.image !== undefined) {
@@ -832,7 +830,7 @@
         }
 
         // draw line connectors from box towards the parent, before drawing of boxes
-        if (parent != null) {
+        if (parent !== null) {
             // GG 120613 now lines are from center to center of boxes in order to prepare for the invisible box type
             // i left the previous way to draw lines inside comments
             var path, line;
@@ -894,13 +892,14 @@
 
         // draw optional images
         if (options.use_images && node.image !== undefined) {
+            var image;
             if (node.image_position !== undefined && node.image_position == "above") {   // text below image
-                var image = oc_paper.image(options.images_base_url + node.image,
+                image = oc_paper.image(options.images_base_url + node.image,
                     xc - options.images_size[0] / 2, y0 + options.inner_padding,
                     options.images_size[0], options.images_size[1]);
             }
             else {   // text above image (default)
-                var image = oc_paper.image(options.images_base_url + node.image,
+                image = oc_paper.image(options.images_base_url + node.image,
                     xc - options.images_size[0] / 2, y1 - options.images_size[1] - options.inner_padding,
                     options.images_size[0], options.images_size[1]);
             }
@@ -913,7 +912,7 @@
         if (typeof options.box_html_template == "string") {
             var hBox = new htmlBox(oc_paper, { x: x0, y: y0, width: x1 - x0, height: y1 - y0 });
             var template = jQuery("#" + options.box_html_template);
-            if (template.length != 0 && hBox.div != null) {
+            if (template.length !== 0 && hBox.div !== null) {
                 hBox.div.html(template.render(node));
             }
             if (options.debug) {
@@ -943,11 +942,11 @@
                     box.click(function (event) { options.box_click_handler(event, box); });
 
                 // draw node title and subtitle
-                var title_ypos = y0 + options.inner_padding
-                    + node.title_lines * options.title_char_size[1] / 2
-                    + (oc_max_title_lines - node.title_lines) * options.title_char_size[1] / 2
-                    - 2;
-                if ((options.use_images && node.image !== undefined) && 
+                var title_ypos = y0 + options.inner_padding +
+                    node.title_lines * options.title_char_size[1] / 2 +
+                    (oc_max_title_lines - node.title_lines) * options.title_char_size[1] / 2 -
+                    2;
+                if ((options.use_images && node.image !== undefined) &&
                     (node.image_position !== undefined && node.image_position == "above")) {   // text below image
                     title_ypos += options.images_size[1] + options.inner_padding;
                 }
@@ -956,8 +955,8 @@
                 title.attr('font-size', options.title_font_size);
                 title.attr('fill', options.title_color);
                 if (node.subtitle !== undefined) {
-                    var subtitle_ypos = y1 - options.inner_padding
-                        - node.subtitle_lines * options.subtitle_char_size[1] / 2;
+                    var subtitle_ypos = y1 - options.inner_padding -
+                        node.subtitle_lines * options.subtitle_char_size[1] / 2;
                     if (options.use_images && node.image !== undefined)
                         subtitle_ypos -= options.images_size[1] + options.inner_padding;
                     if ((options.use_images && node.image !== undefined) &&
@@ -1013,7 +1012,7 @@
 
         this.div = jQuery('<div style="position: absolute; width: 0; height: 0;" class="node"></div>').appendTo(this.raphaelContainer);
         this.update();
-        // If you don't call ggOrgChart.render(data, options); in $(document).ready(function () {...}); 
+        // If you don't call ggOrgChart.render(data, options); in $(document).ready(function () {...});
         // then you should use following approach instead this.update();
         //jQuery(document).bind('ready', this, function(event) { event.data.update(); });
         //jQuery(window).bind('resize', this, function(event) { event.data.update(); });
